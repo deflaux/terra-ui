@@ -353,7 +353,7 @@ const ReferenceDataContent = ({ workspace: { workspace: { namespace, attributes 
   ])
 }
 
-const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, selectedEntities }) => {
+const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, onWorkflowSuccess, selectedEntities }) => {
   const [toolMode, setToolMode] = useState()
   const entitiesCount = _.keys(selectedEntities).length
   const entitiesType = !!entitiesCount && selectedEntities[_.keys(selectedEntities)[0]].entityType
@@ -400,7 +400,7 @@ const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, selectedEntities }) =
             ),
             h(ModalToolButton,
               {
-                tooltip: 'Open with Workflow (coming soon)',
+                tooltip: 'Open with Workflow',
                 style: { marginTop: '0.5rem' },
                 disabled: true
               }, [
@@ -414,6 +414,13 @@ const ToolDrawer = ({ openDrawer, onDismiss, onIgvSuccess, selectedEntities }) =
       ])
     ], [
       'IGV', () => h(IGVFileSelector, {
+        onPrevious: () => setToolMode(undefined),
+        onDismiss,
+        onSuccess: onIgvSuccess,
+        selectedEntities
+      })
+    ], [
+      'Workflow', () => h(thing, {
         onPrevious: () => setToolMode(undefined),
         onDismiss,
         onSuccess: onIgvSuccess,
@@ -433,6 +440,10 @@ class EntitiesContent extends Component {
       igvData: {
         selectedFiles: undefined,
         igvRefGenome: ''
+      },
+      workflowData: {
+        selectedFiles: undefined,
+        selectedWorkflow: ''
       }
     }
     this.downloadForm = createRef()
@@ -635,6 +646,7 @@ class EntitiesContent extends Component {
         openDrawer: showToolSelector,
         onDismiss: () => this.setState({ showToolSelector: false }),
         onIgvSuccess: newIgvData => this.setState({ showToolSelector: false, igvData: newIgvData }),
+        onWorkflowSuccess: newWorkflowData => this.setState({ showToolSelector: false, workflowData: newWorkflowData}),
         selectedEntities
       })
     ])
