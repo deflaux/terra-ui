@@ -406,6 +406,21 @@ export const useCancellation = () => {
   return controller.current.signal
 }
 
+export const usePollingEffect = (effectFn, { ms, leading }) => {
+  const signal = useCancellation()
+
+  useOnMount(() => {
+    const poll = async () => {
+      leading && await effectFn()
+      while (!signal.aborted) {
+        await delay(ms)
+        !signal.aborted && await effectFn()
+      }
+    }
+    poll()
+  })
+}
+
 export const maybeParseJSON = maybeJSONString => {
   try {
     return JSON.parse(maybeJSONString)
@@ -413,3 +428,5 @@ export const maybeParseJSON = maybeJSONString => {
     return undefined
   }
 }
+
+export const sanitizeEntityName = unsafe => unsafe.replace(/[^\w]/g, '-')
