@@ -20,5 +20,9 @@
     "suiteName": "Integration tests",
     "addFileAttribute": true,
     "includeConsoleOutput": true
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "lodash": "^4.17.15"
   }
 }

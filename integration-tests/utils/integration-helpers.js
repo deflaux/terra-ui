@@ -3,8 +3,8 @@ const { delay, signIntoTerra } = require('./integration-utils')
 const { fetchLyle } = require('./lyle-utils')
 
 
-const makeWorkspace = async () => {
-  const ajaxPage = await browser.newPage()
+const makeWorkspace = async ({ context }) => {
+  const ajaxPage = await context.newPage()
 
   await ajaxPage.goto(testUrl)
   await signIntoTerra(ajaxPage)
@@ -24,8 +24,8 @@ const makeWorkspace = async () => {
   return workspaceName
 }
 
-const deleteWorkspace = async workspaceName => {
-  const ajaxPage = await browser.newPage()
+const deleteWorkspace = async ({ context, workspaceName }) => {
+  const ajaxPage = await context.newPage()
 
   await ajaxPage.goto(testUrl)
   await signIntoTerra(ajaxPage)
@@ -39,18 +39,18 @@ const deleteWorkspace = async workspaceName => {
   await ajaxPage.close()
 }
 
-const withWorkspace = test => async () => {
-  const workspaceName = await makeWorkspace()
+const withWorkspace = test => async ({ context }) => {
+  const workspaceName = await makeWorkspace({ context })
 
   try {
-    await test({ workspaceName })
+    await test({ context, workspaceName })
   } catch (e) {
     if (screenshotDir) {
       await page.screenshot({ path: `${screenshotDir}/failure-${workspaceName}.png`, fullPage: true })
     }
     throw e
   } finally {
-    await deleteWorkspace(workspaceName)
+    await deleteWorkspace({ context, workspaceName })
   }
 }
 
