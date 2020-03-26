@@ -106,6 +106,17 @@ const findInDataTableRow = (page, entityName, text) => {
   return findElement(page, `//*[@role="grid"]//*[contains(.,"${entityName}")]/following-sibling::*[contains(.,"${text}")]`)
 }
 
+const openNotification = async page => {
+  //close out any non-error notifications first
+  await dismissNotifications(page)
+
+  const errorDetails = await page.$x('(//a | //*[@role="button"] | //button)[contains(normalize-space(.),"Details")]')
+
+  return Promise.all(
+    errorDetails.map(handle => handle.click())
+  )
+}
+
 const withScreenshot = _.curry((testName, fn) => async options => {
   const { page } = options
   const { screenshotDir } = config
@@ -115,6 +126,8 @@ const withScreenshot = _.curry((testName, fn) => async options => {
     if (screenshotDir) {
       try {
         await page.screenshot({ path: `${screenshotDir}/failure-${Date.now()}-${testName}.png`, fullPage: true })
+        await openNotification(page)
+        await page.screenshot({ path: `${screenshotDir}/failureNotificationDetails-${Date.now()}-${testName}.png`, fullPage: true })
       } catch (e) {
         console.error('Failed to capture screenshot', e)
       }
@@ -140,5 +153,6 @@ module.exports = {
   signIntoTerra,
   navChild,
   findInDataTableRow,
-  withScreenshot
+  withScreenshot,
+  openNotification
 }

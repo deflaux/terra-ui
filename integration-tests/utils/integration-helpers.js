@@ -84,6 +84,8 @@ const addUserToBilling = withUserToken(async ({ billingProject, context, email, 
     return window.Ajax().Billing.project(billingProject).addUser(['User'], email)
   }, email, billingProject)
 
+  await delay(1000) //allow request to go through before closing page
+
   console.info(`added user to: ${billingProject}`)
 
   await ajaxPage.close()
@@ -163,7 +165,7 @@ const withRegisteredUser = test => withUser(async args => {
   await fillIn(ajaxPage, input({ labelContains: 'Last Name' }), 'Test')
   await click(ajaxPage, clickable({ textContains: 'Register' }))
   await click(ajaxPage, clickable({ textContains: 'Accept' }))
-  await delay(1000)
+  await delay(1000) //allow request to go through before closing page
   await ajaxPage.close()
 
   await test(args)
